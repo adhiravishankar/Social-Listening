@@ -4,6 +4,7 @@ import dotenv
 import gcloud
 import instagram
 import twitter
+import twitter2
 
 dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'), verbose=True)
 datastore_client = gcloud.setup_datastore()
@@ -11,6 +12,10 @@ datastore_client = gcloud.setup_datastore()
 query = "xbox one x"
 query = query.lower()
 tag = query.replace(' ', '')
+
+twitter2.encode_query(query)
+
+twitter2.get_tweets(query)
 
 instagram_api = instagram.login()
 tags = instagram.get_tags(instagram_api, tag)

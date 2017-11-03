@@ -36,3 +36,26 @@ def search(api, datastore_client, text):
 
     return contents
 
+
+def search2(api, datastore_client, text):
+    """
+
+    :param datastore_client: datastore.Client
+    :param api: tweepy.api
+    :param text: string
+    """
+    results = api.search(q=text, count=100, lang='en')
+    contents = []
+    for result in results:
+        key = datastore_client.key('Content')
+        content = datastore.Entity(key)
+        content['type'] = 'twitter'
+        content['text'] = result.text
+        content['created_at'] = result.created_at
+        content['id'] = result.id
+        content['user_id'] = result.user.id
+        content['retweet_count'] = result.retweet_count
+        content['favourites_count'] = result.favourites_count
+        contents.append(content)
+
+    return contents

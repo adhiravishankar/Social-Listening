@@ -1,9 +1,10 @@
+import os
 from google.cloud import datastore
 from oauth2client.client import GoogleCredentials
 
 
 def setup_datastore():
-    GoogleCredentials.from_stream('Chiroptera-a280fa6f621c.json')
+    GoogleCredentials.from_stream(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
     datastore_client = datastore.Client(namespace='social-listening')
     return datastore_client
 

@@ -17,35 +17,21 @@ def get_tags(instagram_api, query):
 
 def get_media(instagram_api, tag):
     instagram_api.tagFeed(tag)
-    media_response = instagram_api.LastJson
-    return media_response
+    return instagram_api.LastJson
 
 
 def get_comments(instagram_api, media_id):
     instagram_api.getMediaComments(media_id)
-    comments_response = instagram_api.LastJson
-    return comments_response
+    return instagram_api.LastJson
 
 
 def put_item(datastore_client, item):
     key = datastore_client.key('Content')
     content = datastore.Entity(key)
-    content['type'] = 'instagram'
-    content['text'] = item['caption']['text']
-    content['created_at'] = item['caption']['created_at']
-    content['id'] = item['id']
-    content['user_id'] = item['caption']['user_id']
-    content['comment_count'] = item['comment_count']
-    content['favourites_count'] = item['like_count']
     return content
 
 
 def put_comment(datastore_client, item):
     key = datastore_client.key('Content')
     content = datastore.Entity(key)
-    content['type'] = 'instagram'
-    content['text'] = item['text']
-    content['created_at'] = item['created_time']
-    content['id'] = item['id']
-    content['user_id'] = item['from']['user_id']
     return content
