@@ -4,15 +4,13 @@ import requests
 from datetime import date
 from fake_useragent import UserAgent
 from twitterscraper import Tweet
-from twitterscraper.query import INIT_URL, RELOAD_URL
 
+INIT_URL = "https://twitter.com/search?l=en&f=tweets&vertical=default&q={q}"
+RELOAD_URL = "https://twitter.com/i/search/timeline?l=en&f=tweets&vertical=" \
+             "default&include_available_features=1&include_entities=1&" \
+             "reset_error_state=false&src=typd&max_position={pos}&q={q}"
 
-def encode_query(query):
-    query = query.replace(' ', '%20')
-    return query
-
-
-def query_tweets_once(query, limit=None, num_tweets=0):
+def query_tweets_once(query):
     """
     Queries twitter for all the tweets you want! It will load all pages it gets
     from twitter. However, twitter might out of a sudden stop serving new pages,
@@ -23,9 +21,6 @@ def query_tweets_once(query, limit=None, num_tweets=0):
 
     :param query: Any advanced query you want to do! Compile it at
                   https://twitter.com/search-advanced and just copy the query!
-    :param limit: Scraping will be stopped when at least ``limit`` number of
-                  items are fetched.
-    :param num_tweets: Number of tweets fetched outside this function.
     :return:      A list of twitterscraper.Tweet objects. You will get at least
                   ``limit`` number of items.
     """
@@ -113,4 +108,3 @@ def query_all_tweets(query, year=2006, month=3):
             yield query_tweets_once(query), query
     except KeyboardInterrupt:
         print("Program interrupted by user. Returning all tweets gathered so far.")
-
