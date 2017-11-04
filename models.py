@@ -1,28 +1,28 @@
-from pymodm import MongoModel, fields
+from mongoengine import Document, StringField, DateTimeField, IntField, FloatField, LongField, ObjectIdField
 
 
-class Content(MongoModel):
-    network = fields.LineStringField
-    text = fields.MultiLineStringField
-    created_at = fields.DateTimeField
-    id = fields.LineStringField
-    comment_count = fields.IntegerField
-    favourites_count = fields.IntegerField
-    retweet_count = fields.IntegerField
-    user_id = fields.BigIntegerField
-    sentiment = fields.FloatField
+class Content(Document):
+    network = StringField(required=True)
+    text = StringField(required=True)
+    created_at = DateTimeField(required=True)
+    id = StringField(required=True)
+    comment_count = IntField()
+    favourites_count = IntField()
+    retweet_count = IntField()
+    user_id = LongField()
+    sentiment = FloatField(required=True)
 
 
-class Keywords(MongoModel):
-    phrase = fields.LineStringField
-    overall_sentiment = fields.FloatField
-    count = fields.IntegerField
-    search = fields.ObjectIdField
+class Keywords(Document):
+    phrase = StringField(required=True)
+    overall_sentiment = FloatField()
+    count = IntField(required=True)
+    search = ObjectIdField(required=True)
 
 
-class Search(MongoModel):
-    text = fields.LineStringField
-    content_count = fields.IntegerField
-    overall_sentiment = fields.IntegerField
-    created_at = fields.DateTimeField
-    updated_at = fields.DateTimeField
+class Search(Document):
+    text = StringField(required=True)
+    content_count = IntField(required=True)
+    overall_sentiment = FloatField(required=True)
+    created_at = DateTimeField(required=True)
+    updated_at = DateTimeField(required=True)

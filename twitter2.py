@@ -1,7 +1,11 @@
 import logging
 from datetime import date
 from multiprocessing.pool import Pool
-from twitterscraper.query import query_single_page, INIT_URL, RELOAD_URL
+
+import requests
+from fake_useragent import UserAgent
+from twitterscraper import Tweet
+from twitterscraper.query import INIT_URL, RELOAD_URL
 
 
 def encode_query(query):
@@ -11,10 +15,6 @@ def encode_query(query):
 
 def get_tweets(query):
     query_all_tweets('xbox one x', 2017, 5)
-
-
-def query_tweets(query, limit=None, num_tweets=0):
-    return query_tweets_once(query, limit, num_tweets), query
 
 
 def query_tweets_once(query, limit=None, num_tweets=0):
@@ -34,7 +34,7 @@ def query_tweets_once(query, limit=None, num_tweets=0):
     :return:      A list of twitterscraper.Tweet objects. You will get at least
                   ``limit`` number of items.
     """
-    logging.info("Querying {}".format(query))
+    print("Querying {}".format(query))
     query = query.replace(' ', '%20').replace("#", "%23").replace(":", "%3A")
     pos = None
     tweets = []
@@ -46,21 +46,63 @@ def query_tweets_once(query, limit=None, num_tweets=0):
                 pos is None
             )
             if len(new_tweets) == 0:
-                logging.info("Got {} tweets for {}.".format(len(tweets), query))
+                print("Got {} tweets for {}.".format(len(tweets), query))
                 return
 
-            logging.info("Got {} tweets ({} new).".format(len(tweets) + num_tweets, len(new_tweets)))
+            print("Got {} tweets ({} new).".format(len(tweets) + num_tweets, len(new_tweets)))
             yield new_tweets
 
             if limit is not None and len(tweets) + num_tweets >= limit:
                 return
     except KeyboardInterrupt:
-        logging.info("Program interrupted by user. Returning tweets gathered so far...")
+        print("Program interrupted by user. Returning tweets gathered so far...")
     except BaseException:
         logging.exception("An unknown error occurred! Returning tweets gathered so far.")
 
     return tweets
 
+
+def query_single_page(url, html_response=True, retry=3):
+    """
+    Returns tweets from the given URL.
+
+    :param url: The URL to get the tweets from
+    :param html_response: False, if the HTML is embedded in a JSON
+    :param retry: Number of retries if something goes wrong.
+    :return: The list of tweets, the pos argument for getting the next page.
+    """
+    global json_resp
+    headers = {'User-Agent': UserAgent().random}
+
+    try:
+        response = requests.get(url, headers=headers)
+        if html_response:
+            html = response.text
+        else:
+            json_resp = response.json()
+            html = json_resp['items_html']
+
+        tweets = list(Tweet.from_html(html))
+
+        if not tweets:
+            return [], None
+
+        if not html_response:
+            return tweets, json_resp['min_position']
+
+        return tweets, "TWEET-{}-{}".format(tweets[-1].id, tweets[0].id)
+    except requests.exceptions.HTTPError as e:
+        logging.exception('HTTPError {} while requesting "{}"'.format(e, url))
+    except requests.exceptions.ConnectionError as e:
+        logging.exception('ConnectionError {} while requesting "{}"'.format(e, url))
+    except requests.exceptions.Timeout as e:
+        logging.exception('TimeOut {} while requesting "{}"'.format(e, url))
+    if retry > 0:
+        print("Retrying...")
+        return query_single_page(url, html_response, retry-1)
+
+    logging.error("Giving up.")
+    return [], None
 
 
 def query_all_tweets(query, year=2006, month=3):
@@ -89,7 +131,7 @@ def query_all_tweets(query, year=2006, month=3):
     pool = Pool(20)
     all_tweets = 0
     try:
-        for new_tweets, query in pool.imap_unordered(query_tweets, queries):
+        for new_tweets in pool.imap_unordered(query_tweets_once, queries):
             all_tweets += len(new_tweets)
             print("Got {} tweets ({} new). {}". format(all_tweets, len(new_tweets), query))
             yield new_tweets

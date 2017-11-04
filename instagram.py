@@ -1,6 +1,6 @@
 import os
 from InstagramAPI import InstagramAPI
-from google.cloud import datastore
+from models import Content
 
 
 def login():
@@ -25,13 +25,22 @@ def get_comments(instagram_api, media_id):
     return instagram_api.LastJson
 
 
-def put_item(datastore_client, item):
-    key = datastore_client.key('Content')
-    content = datastore.Entity(key)
+def put_item(item):
+    content = Content(network='instagram',
+                      content_type='post',
+                      text=item['caption']['text'],
+                      created_at=item['caption']['created_at'],
+                      id=item['id'],
+                      user_id=item['caption']['user_id'],
+                      comment_count=item['comment_count'],
+                      favourites_count=item['like_count'])
     return content
 
 
-def put_comment(datastore_client, item):
-    key = datastore_client.key('Content')
-    content = datastore.Entity(key)
+def put_comment(item):
+    content = Content(network='instagram',
+                      content_type='comment',
+                      text=item['text'],
+                      created_at=item['created_time'],
+                      id=item['id'])
     return content
