@@ -3,6 +3,7 @@ from mongoengine import Document, StringField, DateTimeField, IntField, FloatFie
 
 class Content(Document):
     network = StringField(required=True)
+    content_type = StringField(required=True)
     text = StringField(required=True)
     created_at = DateTimeField(required=True)
     id = StringField(required=True)
@@ -10,6 +11,7 @@ class Content(Document):
     favourites_count = IntField()
     retweet_count = IntField()
     user_id = LongField()
+    user_screenname = StringField()
     sentiment = FloatField(required=True)
 
 
