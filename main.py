@@ -16,6 +16,6 @@ db = client['sociallistening']
 query = query.lower()
 tag = query.replace(' ', '')
 search = mongodb.put_search(query, db)
-
 content_collection = db['content']
-collect_tweets()
+
+all_tweets = twitter2.query_all_tweets(query, content_collection, search)
