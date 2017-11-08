@@ -53,7 +53,7 @@ def query_tweets(query, content_collection, search, limit=None):
         iteration += 1
 
 
-def query_all_tweets(query, content_collection, search):
+def query_all_tweets(query, content_collection, search, year=2017, month=1):
     """
     Queries *all* tweets in the history of twitter for the given query. This
     will run in parallel for each ~10 days.
@@ -61,8 +61,6 @@ def query_all_tweets(query, content_collection, search):
     :param query: A twitter advanced search query.
     :return: A list of tweets.
     """
-    year = 2006
-    month = 3
 
     limits = []
     while date(year=year, month=month, day=1) < date.today():
