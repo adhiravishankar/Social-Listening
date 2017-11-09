@@ -67,12 +67,9 @@ def query_all_tweets(query, content_collection, search, year=2017, month=1):
         nextmonth = month + 1 if month < 12 else 1
         nextyear = year + 1 if nextmonth == 1 else year
 
-        limits.append((date(year=year, month=month, day=1), date(year=year, month=month, day=5)))
-        limits.append((date(year=year, month=month, day=5), date(year=year, month=month, day=10)))
-        limits.append((date(year=year, month=month, day=10), date(year=year, month=month, day=15)))
-        limits.append((date(year=year, month=month, day=15), date(year=year, month=month, day=20)))
-        limits.append((date(year=year, month=month, day=20), date(year=year, month=month, day=25)))
-        limits.append((date(year=year, month=month, day=25), date(year=nextyear, month=nextmonth, day=1)))
+        for i in range(1, 28):
+            limits.append((date(year=year, month=month, day=i), date(year=year, month=month, day=i+1)))
+        limits.append((date(year=year, month=month, day=28), date(year=nextyear, month=nextmonth, day=1)))
         year, month = nextyear, nextmonth
 
     queries = ['{} since:{} until:{}'.format(query, since, until) for since, until in reversed(limits)]
