@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import dotenv
 import imageio
@@ -9,6 +10,7 @@ import instagram
 import mongodb
 import twitter2
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 imageio.plugins.ffmpeg.download()
 dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'), verbose=True)
 client = MongoClient(os.environ.get('DB_HOST'), 27017)
