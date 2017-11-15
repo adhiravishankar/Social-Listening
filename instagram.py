@@ -9,13 +9,13 @@ def query_all_posts(tag, content_collection):
         media = get_media(instagram_api, tag['name'])
         while True:
             contents = []
-            if media['ranked_items']:
+            if 'ranked_items' in media:
                 for item in media['ranked_items']:
                     contents.append(put_item(item, instagram_api, content_collection))
-            if media['items']:
+            if 'items' in media:
                 for item in media['items']:
                     contents.append(put_item(item, instagram_api, content_collection))
-            if media['more_available']:
+            if 'more_available' in media:
                 media = get_next_media(instagram_api, tag['name'], media['next_max_id'])
 
 
@@ -64,10 +64,12 @@ def put_item(item, instagram_api, content_collection):
             for comment in comments['comments']:
                 if content_collection.count({'id': comment['pk'], 'network': 'instagram', 'content_type': 'comment'}) == 0:
                     contents.append(put_comment(comment, item['id']))
-            if comments['has_more_comments']:
+            if 'has_more_comments' in comments:
                 comments = get_comments(instagram_api, item['id'], comments['next_max_id'])
             else:
                 break
+
+    print("Putting in {} posts!".format(len(contents)))
     content_collection.insert_many(contents)
 
 
