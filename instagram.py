@@ -64,12 +64,12 @@ def put_item(item, instagram_api, content_collection):
             for comment in comments['comments']:
                 if content_collection.count({'id': comment['pk'], 'network': 'instagram', 'content_type': 'comment'}) == 0:
                     contents.append(put_comment(comment, item['id']))
-            if 'has_more_comments' in comments:
+            if 'next_max_id' in comments:
                 comments = get_comments(instagram_api, item['id'], comments['next_max_id'])
             else:
                 break
 
-    print("Putting in {} posts!".format(len(contents)))
+    print("Putting in {} posts, with {} comments!".format(len(contents), item['comment_count']))
     content_collection.insert_many(contents)
 
 
