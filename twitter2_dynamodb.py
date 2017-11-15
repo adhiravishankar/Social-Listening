@@ -53,17 +53,6 @@ def query_tweets(query, content_collection, search, limit=None):
         iteration += 1
 
 
-def count_content_collection(content_collection, search, year, month, day, year2, month2, day2):
-    content_count = content_collection.count({
-        "search": search['_id'],
-        "created_at": {
-            "$gte": datetime(year=year, month=month, day=day).utcnow(),
-            "$lte": datetime(year=year2, month=month2, day=day2).utcnow()
-        }
-    })
-    return content_count == 0
-
-
 def query_all_tweets(query, content_collection, search, year=2017, month=1):
     """
     Queries *all* tweets in the history of twitter for the given query. This
@@ -79,10 +68,8 @@ def query_all_tweets(query, content_collection, search, year=2017, month=1):
         nextyear = year + 1 if nextmonth == 1 else year
 
         for i in range(1, 26, 2):
-            if count_content_collection(content_collection, search, year, month, i, year, month, i + 2):
-                limits.append((date(year=year, month=month, day=i), date(year=year, month=month, day=i + 2)))
-        if count_content_collection(content_collection, search, year, month, 28, nextyear, nextmonth, 1):
-            limits.append((date(year=year, month=month, day=28), date(year=nextyear, month=nextmonth, day=1)))
+            limits.append((date(year=year, month=month, day=i), date(year=year, month=month, day=i + 2)))
+        limits.append((date(year=year, month=month, day=28), date(year=nextyear, month=nextmonth, day=1)))
         year, month = nextyear, nextmonth
 
     queries = ['{} since:{} until:{}'.format(query, since, until) for since, until in reversed(limits)]

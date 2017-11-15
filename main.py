@@ -12,7 +12,7 @@ import twitter2
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 imageio.plugins.ffmpeg.download()
 dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'), verbose=True)
-client = MongoClient(os.environ.get('DB_HOST'), 27017)
+client = MongoClient(os.environ.get('MONGODB_CONNECTION'))
 db = client['sociallistening']
 
 parser = argparse.ArgumentParser()
