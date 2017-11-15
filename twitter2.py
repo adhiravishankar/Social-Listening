@@ -27,7 +27,7 @@ def query_tweets(query, content_collection, search, limit=None):
     tweets = 0
     query_with_date = query
     while True:
-        # print("Running iteration no {}, query is {}".format(iteration, repr(query)))
+        print("Running iteration no {}, query is {}".format(iteration, repr(query)))
         new_tweets = query_tweets_once(query_with_date, limit, tweets)
         insert_tweets(content_collection, query, search, new_tweets)
         tweets += len(new_tweets)
@@ -37,7 +37,7 @@ def query_tweets(query, content_collection, search, limit=None):
 
         mindate = min(map(lambda tweet: tweet.timestamp, new_tweets)).date()
         maxdate = max(map(lambda tweet: tweet.timestamp, new_tweets)).date()
-        # print("Got tweets ranging from {} to {}".format(mindate.isoformat(), maxdate.isoformat()))
+        print("Got tweets ranging from {} to {}".format(mindate.isoformat(), maxdate.isoformat()))
 
         # Add a day, twitter only searches until excluding that day and we dont
         # have complete results for that one yet. However, we cannot limit the
