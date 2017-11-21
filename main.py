@@ -3,8 +3,10 @@ import logging
 import os
 import dotenv
 import imageio
+from datetime import date
 from pymongo import MongoClient
 
+import analyzer
 import instagram
 import mongodb
 import twitter2
@@ -20,12 +22,16 @@ parser.add_argument('query')
 parser.add_argument('--stage')
 parser.add_argument('--year')
 parser.add_argument('--month')
+parser.add_argument('--year2')
+parser.add_argument('--month2')
 
 args = parser.parse_args()
 query = args.query
 stage = args.stage
 year = args.year
 month = args.month
+year2 = args.year2
+month2 = args.month2
 
 query = query.lower()
 tag = query.replace(' ', '')
@@ -35,10 +41,16 @@ content_collection = db['content']
 if stage is 'i':
     instagram.query_all_posts(tag, content_collection)
 elif stage is 't':
-    if month is None and year is None:
+    if month is None and year is None and year2 is None and month2 is None:
         twitter2.query_all_tweets(query, content_collection, search)
+    elif month2 is None and year2 is None:
+        # noinspection PyTypeChecker
+        twitter2.query_all_tweets(query, content_collection, search, int(year), int(month))
     else:
-        twitter2.query_all_tweets(query, content_collection, search, year, month)
+        twitter2.query_all_tweets(query, content_collection, search, int(year), int(month), date(int(year2), int(month2), 1))
+elif stage is 'a':
+    model = analyzer.load_keras_model()
+    print(model)
 else:
     twitter2.query_all_tweets(query, content_collection, search)
     instagram.query_all_posts(tag, content_collection)

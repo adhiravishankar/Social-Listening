@@ -7,14 +7,19 @@ MAX_SEQUENCE_LENGTH = 1000
 MAX_NB_WORDS = 20000
 
 
-def analyze_content(content):
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # str(random.randint(0, 15))
-
-    X, word_index = tokenize_data(content)
-
+def load_keras_model():
+    os.environ.setdefault('CUDA_VISIBLE_DEVICES', '0')
     model = load_model('model.h5')
     model.load_weights("weights.h5")
+    return model
 
+
+def process_content_unfiltered(query, content_collection, model, search):
+    print(search)
+
+
+def analyze_content(model, content):
+    X, word_index = tokenize_data(content)
     predictions = model.predict(x=X, batch_size=128)
 
     for index, txt in enumerate(content):
