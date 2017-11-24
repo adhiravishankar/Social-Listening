@@ -16,7 +16,7 @@ def insert_tweets(content_collection, query, search, tweets):
                    'favourites_count': tweet.likes,
                    'replies_count': tweet.replies,
                    'search_id': search['_id']}
-        if content_collection.count({'id': tweet.id, 'network': 'twitter'}) == 0:
+        if content_collection.count({'id': tweet.id, 'network': 'twitter', 'search_id': search['_id']}) == 0:
             contents.append(content)
     if len(contents) > 0:
         content_collection.insert_many(contents)

@@ -1,6 +1,6 @@
 import argparse
-import logging
 import os
+
 import dotenv
 import imageio
 from datetime import date
@@ -50,7 +50,9 @@ elif stage is 't':
         twitter2.query_all_tweets(query, content_collection, search, int(year), int(month), date(int(year2), int(month2), 1))
 elif stage is 'a':
     model = analyzer.load_keras_model()
-    print(model)
+    analyzer.process_content_unfiltered(query, content_collection, model, search)
+elif stage is 'l':
+    analyzer.process_language_for_content(content_collection)
 else:
     twitter2.query_all_tweets(query, content_collection, search)
     instagram.query_all_posts(tag, content_collection)

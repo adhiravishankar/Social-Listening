@@ -1,4 +1,6 @@
 import os
+
+import detectlanguage
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
@@ -10,8 +12,22 @@ MAX_NB_WORDS = 20000
 def load_keras_model():
     os.environ.setdefault('CUDA_VISIBLE_DEVICES', '0')
     model = load_model('model.h5')
-    model.load_weights("weights.h5")
+    model.load_weights('weights.h5')
     return model
+
+
+def process_language_for_content(content_collection):
+    """
+
+    :type content_collection: pymongo.collection.Collection
+    """
+    detectlanguage.configuration.api_key = os.environ.get('DETECTLANG')
+    for post in content_collection.find({'ld_lang': None}):
+        lang_json = detectlanguage.detect(post['text'])
+        if lang_json[0]['isReliable']:
+            content_collection.update_one({'_id': post['_id']}, {"$set": {'ld_lang': lang_json[0]['language']}})
+
+
 
 
 def process_content_unfiltered(query, content_collection, model, search):
