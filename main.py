@@ -52,7 +52,7 @@ elif stage is 'a':
     model = analyzer.load_keras_model()
     analyzer.process_content_unfiltered(query, content_collection, model, search)
 elif stage is 'l':
-    analyzer.process_language_for_content(content_collection)
+    analyzer.process_language_for_content(content_collection, search)
 else:
     twitter2.query_all_tweets(query, content_collection, search)
     instagram.query_all_posts(tag, content_collection)
