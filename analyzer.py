@@ -16,13 +16,13 @@ def load_keras_model():
     return model
 
 
-def process_language_for_content(content_collection):
+def process_language_for_content(content_collection, search):
     """
 
     :type content_collection: pymongo.collection.Collection
     """
     detectlanguage.configuration.api_key = os.environ.get('DETECTLANG')
-    for post in content_collection.find({'ld_lang': None}):
+    for post in content_collection.find({'ld_lang': None, 'search_id': search['_id']}):
         lang_json = detectlanguage.detect(post['text'])
         if lang_json[0]['isReliable']:
             content_collection.update_one({'_id': post['_id']}, {"$set": {'ld_lang': lang_json[0]['language']}})
